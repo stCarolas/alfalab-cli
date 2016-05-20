@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+# Publishes release (as git tag)
+
+import sys
+import semver
+import argparse
+from herodotus import Herodotus
+
+def get_cli_args():
+    parser = argparse.ArgumentParser(description='Generate changelog')
+    parser.add_argument('repo',
+                        metavar = 'directory',
+                        type = str, 
+                        nargs = 1,
+                        help = 'git repository')
+    parser.add_argument('--fix',
+                        dest = 'fix',
+                        action = 'store_const',
+                        const=True,
+                        default = False,
+                        help = 'git repository')
+    return parser.parse_args()
+    
+def release(repo, is_fix):
+    tags = Herodotus(repo).get_tags()
+    if tags:
+        last_release = tags[len(tags) - 1]
+        if last_release:
+            version = ""
+            if is_fix:
+                version = semver.bump_patch(last_release.name)
+            else:
+                version = semver.bump_minor(last_release.name)
+            return version
+    return "1.0.0"
+
+args = get_cli_args()
+release = release(args.repo[0], args.fix)

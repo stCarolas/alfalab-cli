@@ -5,7 +5,7 @@ BASENAME = File.basename(__FILE__)
 PREFIX = "#{BASENAME}-"
 
 
-class MagicCli
+class Alfa
     attr_reader :commands
 
     def initialize()
@@ -56,7 +56,7 @@ class MagicCli
 end
 
 command = ARGV.shift
-cli = MagicCli.new
+cli = Alfa.new
 case command
     when nil, '--help', '-h'
         puts "usage: #{BASENAME} <command> [<args>]"
