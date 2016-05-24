@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+# Setting up enviroment for running alfa commands
+
+import subprocess, os
+
+class Setup():
+
+    libraries = ["semver"]
+
+    def __init__(self):
+        print("Setting up")
+        
+    def install_python_libs(self):
+        for lib in self.libraries:
+            subprocess.call(["pip3","install", lib])
+        print("success")
+   
+    def upgrade_python_libs(self):
+        for lib in self.libraries:
+            subprocess.call(["pip3","install", "--upgrade", lib])
+        print("success")
+        
+    def per_command_settings(self):
+        pythonpath = os.environ['PYTHONPATH']
+        if not pythonpath:
+            pythonpath = ""
+        else
+        pythonpath += ""
+        os.putenv("PYTHONPATH", 
+        
+if __name__ == '__main__':
+    Setup().install_python_libs()

@@ -45,12 +45,16 @@ class Alfa
 
 
     def execute(command, args)
+        setup = File.join(COMMAND_DIR, PREFIX + "setup")
         executable = File.join(COMMAND_DIR, PREFIX + command)
         unless File.exist?(executable)
             puts "I don't know how to #{command}. :("
             abort
         end
 
+        if File.exist?(setup)
+            exec setup, *ARGV
+        end
         exec executable, *ARGV
     end
 end

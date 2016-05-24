@@ -6,7 +6,7 @@ import configparser
 class Config():
     path = "/Users/stCarolas/.config/alfa/settings.cfg"
     section = "global"
-    def get_config()G:
+    def get_config():
         config = configparser.ConfigParser()
         config.read(self.path)
         return config[self.section]
