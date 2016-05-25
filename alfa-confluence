@@ -32,7 +32,7 @@ class Conluence():
         
      def get_page(self, title):
         page_url = self.url + 'rest/api/content/?title=' + title + "&spaceKey=ECOSYSTEM&expand=body.storage"
-        r = requests.get(page_url, auth = ('u_m0q9h', 'stR14921127jit1'))
+        r = requests.get(page_url, auth = ('', ''))
         return r
         
      def read_file(self, filepath):
