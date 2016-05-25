@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+# Python module for working with confluence
+
+import requests, json
+import argparse
+from alfaproperties import Config
+
+def printResponse(r):
+	print (json.dumps(r.json(), sort_keys=True, indent=4, separators=(',', ': ')), r)
+    
+def get_cli_args():
+    parser = argparse.ArgumentParser(description='Tools for working with confluence rest api')
+    parser.add_argument('filepath',
+                        metavar = 'filepath',
+                        type = str, 
+                        nargs = 1,
+                        help = 'file with content for creating page')                    
+    parser.add_argument('--title',
+                        dest = 'title',
+                        type = str,
+                        default = 'new page',
+                        help = 'page title (default - new page)')
+    return parser.parse_args()
+
+class Conluence():
+     
+     def __init__(self):
+        self.url = Config().get_value("confluence")
+        
+     def get_releases_page(self):
+        return self.get_page("Releases")
+        
+     def get_page(self, title):
+        page_url = self.url + 'rest/api/content/?title=' + title + "&spaceKey=ECOSYSTEM&expand=body.storage"
+        r = requests.get(page_url, auth = ('u_m0q9h', 'stR14921127jit1'))
+        return r
+        
+     def read_file(self, filepath):
+        file = open(filepath, 'r')
+        filecontent = file.read()
+        return filecontent
+        
+     def create_page(self, title, filepath):
+        page_url = self.url + 'rest/api/content/'
+        filecontent = self.read_file(filepath)
+        data = {"type":"page","title":str(title),"ancestors":[{"id":73776103}], "space":{"key":"ECOSYSTEM"},"body":{"storage":{"value":str(filecontent),"representation":"storage"}}}
+        data_json = json.dumps(data)
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(page_url, data=data_json, headers=headers, auth = ('u_m0q9h', 'stR14921127jit1'))
+        print("response:", response)
+        printResponse(response)
+
+if __name__ == '__main__':
+    args = get_cli_args()
+    confluence = Conluence()
+    confluence.create_page(args.title, args.filepath[0])

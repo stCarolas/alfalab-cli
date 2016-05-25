@@ -51,10 +51,6 @@ class Alfa
             puts "I don't know how to #{command}. :("
             abort
         end
-
-        if File.exist?(setup)
-            exec setup, *ARGV
-        end
         exec executable, *ARGV
     end
 end

@@ -1,0 +1,26 @@
+#!/usr/bin/env python3
+# Extract settings from property files from ~/.config/alfa/settings.cfg
+
+import configparser, argparse
+
+def get_cli_args():
+    parser = argparse.ArgumentParser(description='Get properties for alfalab cli')
+    parser.add_argument('key',
+                        metavar = 'key',
+                        type = str, 
+                        nargs = 1,
+                        help = 'property key')
+    return parser.parse_args()
+
+class Config():
+    path = "/Users/stCarolas/.config/alfa/settings.cfg"
+    section = "global"
+
+    def get_value(self, key):
+        config = configparser.ConfigParser()
+        config.read(self.path)
+        return config[self.section][key]
+        
+if __name__ == '__main__':
+    args = get_cli_args()
+    print(Config().get_value(args.key[0]))
