@@ -13,7 +13,7 @@ def get_cli_args():
     return parser.parse_args()
 
 class Config():
-    path = "/Users/stCarolas/.config/alfa/settings.cfg"
+    path = "~/.config/alfa/settings.cfg"
     section = "global"
 
     def get_value(self, key):

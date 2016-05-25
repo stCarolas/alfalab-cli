@@ -4,6 +4,7 @@
 import sys
 import semver
 import argparse
+from alfaproperties import Config
 from git import Repo
 from herodotus import Herodotus
 

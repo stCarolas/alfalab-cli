@@ -18,7 +18,7 @@ class Setup():
     def upgrade_python_libs(self):
         for lib in self.libraries:
             subprocess.call(["pip3","install", "--upgrade", lib])
-        print("success") 
+        print("success")
 
 if __name__ == '__main__':
     Setup().install_python_libs()
