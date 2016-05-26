@@ -8,9 +8,11 @@ from alfaproperties import Config
 from git import Repo
 from herodotus import Herodotus
 
+config = Config()
+
 def get_cli_args():
     parser = argparse.ArgumentParser(description='Generate changelog')
-    parser.add_argument('repo',
+    parser.add_argument('repo',     
                         metavar = 'directory',
                         type = str, 
                         nargs = 1,
@@ -28,22 +30,26 @@ def release(repo, is_fix):
     if tags:
         last_release = tags[len(tags) - 1]
         if last_release:
-            if is_fix:
+            if is_fix:  
                 return semver.bump_patch(last_release.name)
             else:
                 return semver.bump_minor(last_release.name)
     return "1.0.0"
     
 def actualize_scripts():
-    
-
+    projects = config.get_value("git","projects").split(",")
+    for project in projects:
+        repo = config.get_value("git", project + ".url")
+        print(Herodotus(repo).get_unreleased()) 
 
 if __name__ == '__main__':
-    args = get_cli_args()
-    repo_directory = args.repo[0]
+    # print("dir",config.get_value("git", "corp-list-accounts-api.dir"))
+    actualize_scripts()
+    # args = get_cli_args()
+    # repo_directory = args.repo[0]
 
-    release = release(repo_directory, args.fix)
+    # release = release(repo_directory, args.fix)
 
-    repo = Repo(repo_directory)
-    repo.create_tag(release)
+    # repo = Repo(repo_directory)
+    # repo.create_tag(release)
     # repo.git.push(refs=True)

@@ -6,7 +6,7 @@ import argparse
 from alfaproperties import Config
 
 def printResponse(r):
-	print (json.dumps(r.json(), sort_keys=True, indent=4, separators=(',', ': ')), r)
+    print (json.dumps(r.json(), sort_keys=True, indent=4, separators=(',', ': ')), r)
     
 def get_cli_args():
     parser = argparse.ArgumentParser(description='Tools for working with confluence rest api')
@@ -37,7 +37,7 @@ class Conluence():
     def get_releases_page(self):
         return self.get_page("Releases")
 
-     def get_page(self, title):
+    def get_page(self, title):
         page_url = self.url + '/rest/api/content/?title=' + title + "&spaceKey=ECOSYSTEM&expand=body.storage"
         r = requests.get(page_url, auth = ('u_m0q9h', 'stR14921127jit1'))
         return r
@@ -47,7 +47,7 @@ class Conluence():
         filecontent = file.read()
         return filecontent
 
-     def create_page(self, title, filepath):
+    def create_page(self, title, filepath):
         page_url = self.url + '/rest/api/content/'
         filecontent = self.read_file(filepath)
         data = {"type":"page",
