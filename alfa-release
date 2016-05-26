@@ -33,6 +33,9 @@ def release(repo, is_fix):
             else:
                 return semver.bump_minor(last_release.name)
     return "1.0.0"
+    
+def actualize_scripts():
+    
 
 
 if __name__ == '__main__':

@@ -31,7 +31,7 @@ class Conluence():
         return self.get_page("Releases")
         
      def get_page(self, title):
-        page_url = self.url + 'rest/api/content/?title=' + title + "&spaceKey=ECOSYSTEM&expand=body.storage"
+        page_url = self.url + '/rest/api/content/?title=' + title + "&spaceKey=ECOSYSTEM&expand=body.storage"
         r = requests.get(page_url, auth = ('u_m0q9h', 'stR14921127jit1'))
         return r
         
@@ -41,7 +41,7 @@ class Conluence():
         return filecontent
         
      def create_page(self, title, filepath):
-        page_url = self.url + 'rest/api/content/'
+        page_url = self.url + '/rest/api/content/'
         filecontent = self.read_file(filepath)
         data = {"type":"page","title":str(title),"ancestors":[{"id":73776103}], "space":{"key":"ECOSYSTEM"},"body":{"storage":{"value":str(filecontent),"representation":"storage"}}}
         data_json = json.dumps(data)
