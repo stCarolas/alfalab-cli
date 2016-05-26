@@ -23,30 +23,38 @@ def get_cli_args():
     return parser.parse_args()
 
 class Conluence():
-     
-     def __init__(self):
-        self.url = Config().get_value("confluence")
-        
-     def get_releases_page(self):
+
+    config_section = "confluence"
+
+    def __init__(self):
+        self.url = Config().get_value(section = self.config_section,
+                                      key     = "url")
+        self.login = Config().get_value(section = self.config_section,
+                                        key     =  "login")
+        self.password = Config().get_value(section = self.config_section, 
+                                           key     = "password")
+
+    def get_releases_page(self):
         return self.get_page("Releases")
-        
+
      def get_page(self, title):
         page_url = self.url + '/rest/api/content/?title=' + title + "&spaceKey=ECOSYSTEM&expand=body.storage"
         r = requests.get(page_url, auth = ('u_m0q9h', 'stR14921127jit1'))
         return r
-        
-     def read_file(self, filepath):
+
+    def read_file(self, filepath):
         file = open(filepath, 'r')
         filecontent = file.read()
         return filecontent
-        
+
      def create_page(self, title, filepath):
         page_url = self.url + '/rest/api/content/'
         filecontent = self.read_file(filepath)
-        data = {"type":"page","title":str(title),"ancestors":[{"id":73776103}], "space":{"key":"ECOSYSTEM"},"body":{"storage":{"value":str(filecontent),"representation":"storage"}}}
+        data = {"type":"page",
+                "title":str(title),"ancestors":[{"id":73776103}], "space":{"key":"ECOSYSTEM"},"body":{"storage":{"value":str(filecontent),"representation":"storage"}}}
         data_json = json.dumps(data)
         headers = {'Content-Type': 'application/json'}
-        response = requests.post(page_url, data=data_json, headers=headers, auth = ('u_m0q9h', 'stR14921127jit1'))
+        response = requests.post(page_url, data=data_json, headers=headers, auth = (self.login, self.password))
         print("response:", response)
         printResponse(response)
 
