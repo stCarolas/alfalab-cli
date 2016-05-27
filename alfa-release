@@ -7,8 +7,12 @@ import argparse
 from alfaproperties import Config
 from git import Repo
 from herodotus import Herodotus
+import re
 
 config = Config()
+template = '_version\\s*=\\s*\\d*\\.\\d*\\.\\d*'
+projects = config.get_value("git","projects").split(",")
+
 
 def get_cli_args():
     parser = argparse.ArgumentParser(description='Generate changelog')
@@ -23,28 +27,76 @@ def get_cli_args():
                         const=True,
                         default = False,
                         help = 'git repository')
+    parser.add_argument('--all',
+                        dest = 'all',
+                        action = 'store_const',
+                        const=True,
+                        default = False,
+                        help = 'release all projects, mentioned in config')
     return parser.parse_args()
 
-def release(repo, is_fix):
+def update_inventory(inventory_name, project, new_version):
+    inventory = config.get_value("global","scripts") + "/" + inventory_name
+    with open(inventory) as f:
+        filecontent = f.read()
+
+    with open(inventory, 'w') as f:
+        search_string = project.replace('-','_').replace('corp_list_','') + template
+        match = re.search(search_string, filecontent)
+        if match:
+            original = match.group(0)
+            updated = original[0:original.index("=") + 1] + " " + new_version
+            filecontent = filecontent.replace(original, updated)
+            f.write(filecontent)
+            f.close()
+
+def release(project, is_fix):
+    repo = get_project_repo(project)
     tags = Herodotus(repo).get_tags()
+    released_version = "1.0.0"
     if tags:
         last_release = tags[len(tags) - 1]
         if last_release:
             if is_fix:  
-                return semver.bump_patch(last_release.name)
+                released_version = semver.bump_patch(last_release.name)
             else:
-                return semver.bump_minor(last_release.name)
-    return "1.0.0"
+                released_version = semver.bump_minor(last_release.name)
+    repo = Repo(repo)
+    repo.create_tag(released_version)
+    update_inventory("integration", project, released_version)
+    return released_version
     
-def actualize_scripts():
-    projects = config.get_value("git","projects").split(",")
+def get_unreleased_projects():
+    unreleased = []
     for project in projects:
-        repo = config.get_value("git", project + ".url")
-        print(Herodotus(repo).get_unreleased()) 
+        repo = get_project_repo(project)
+        if Herodotus(repo).get_unreleased():
+            unreleased.append(project)
+    return unreleased
+
+def get_project_repo(project):
+    return config.get_value("git", project + ".url") 
+
+def release_all(projects):
+    releases = dict()
+    for project in projects:
+        released_version = release(project, False)
+        releases[project] = released_version
+    return releases
+
+def finalize():
+    for project in projects:
+        tags = Herodotus(repo).get_tags()
+        if tags:
+            last_release = tags[len(tags) - 1]
+            if last_release:
+                update_inventory("production", project, last_release.name)
 
 if __name__ == '__main__':
     # print("dir",config.get_value("git", "corp-list-accounts-api.dir"))
-    actualize_scripts()
+    repos = get_unreleased_projects()
+    releases = release_all(repos)
+    print(releases)
     # args = get_cli_args()
     # repo_directory = args.repo[0]
 

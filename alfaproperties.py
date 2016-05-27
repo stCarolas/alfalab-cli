@@ -18,7 +18,6 @@ class Config():
     def get_value(self, section, key):
         config = configparser.ConfigParser()
         config.read(self.path)
-        print("config:", config)
         return config[section][key]
         
 if __name__ == '__main__':
