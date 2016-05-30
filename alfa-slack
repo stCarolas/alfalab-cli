@@ -1,0 +1,13 @@
+#!/usr/bin/env python3
+from slackclient import SlackClient
+from alfaproperties import Config
+
+config = Config()
+
+def get_client():
+   slack = SlackClient(config.get_value("slack", "token"))
+   return slack
+
+slack = get_client()
+random = slack.server.channels.find("general")
+print("random", random)

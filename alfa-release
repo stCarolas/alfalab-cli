@@ -8,6 +8,7 @@ from alfaproperties import Config
 from git import Repo
 from herodotus import Herodotus
 import re
+from sender from Sender
 
 config = Config()
 template = '_version\\s*=\\s*\\d*\\.\\d*\\.\\d*'
