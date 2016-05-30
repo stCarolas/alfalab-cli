@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from slackclient import SlackClient
 from alfaproperties import Config
+from listener import Listener
 
 config = Config()
 
@@ -9,5 +10,15 @@ def get_client():
    return slack
 
 slack = get_client()
-random = slack.server.channels.find("general")
-print("random", random)
+
+def on_message(message):
+    print("message:", message)
+    need_to_send = message['send'] == True
+    if need_to_send:
+        if slack.rtm_connect():
+            channel = message['channel']
+            message = message['message']
+            slack.rtm_send_message(channel, message)
+    pass
+
+Listener().add_listener("public", on_message)
