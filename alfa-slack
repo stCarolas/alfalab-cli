@@ -6,8 +6,7 @@ from listener import Listener
 config = Config()
 
 def get_client():
-   slack = SlackClient(config.get_value("slack", "token"))
-   return slack
+   return SlackClient(config.get_value("slack", "token"))
 
 slack = get_client()
 
@@ -21,4 +20,4 @@ def on_message(message):
             slack.rtm_send_message(channel, message)
     pass
 
-Listener().add_listener("public", on_message)
+Listener(config.get_value("global", "reactor_for_listening")).add_listener("public", on_message)
