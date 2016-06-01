@@ -16,7 +16,7 @@ def get_cli_args():
 class Config():
     path = os.environ['ALFACONFIG']
     if not path:
-        path = "/Users/stCarolas/.config/alfa/settings.cfg"
+        path = "settings.cfg"
 
     def get_value(self, section, key):
         config = configparser.ConfigParser()

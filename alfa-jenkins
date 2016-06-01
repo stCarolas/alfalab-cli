@@ -6,39 +6,30 @@ import json
 from alfaproperties import Config
 
 config = Config()
+events = ['start job']
 
 def get_server_instance():
-    jenkins_url = 'http://manlogdev2/jenkins'
-    print("getting jenkins")
-    server = Jenkins(jenkins_url, username = 'u_m0q9h', password = config.get_value("jenkins", "token"))
+    server = Jenkins(config.get_value("jenkins", "url"),
+                     username = config.get_value("jenkins", "login"),
+                     password = config.get_value("jenkins", "token"))
     print("jenkind getted")
     return server
 
 def parse_message(message):
-    message = json.loads(message)
-    return message
+    return json.loads(message)
+
+def start_job(job):
+    get_server_instance().build_job(job)
+    print("queue build")
     
 def listen(message):
-    print("message:", message)
-    payload = parse_message(message)
-    print("payload", payload)
-    pass
+    message = parse_message(message)
+    if message['event'] in events:
+        job = message['payload']['job']
+        start_job(job)
 
-def get_job_details():
-    # Refer Example #1 for definition of function 'get_server_instance'
-    server = get_server_instance()
-    for j in server.get_jobs():
-        job_instance = server.get_job(j[0])
-        print('Job Name:', job_instance.name)
-        print('Job Description:', job_instance.get_description())
-        print('Is Job running:', job_instance.is_running())
-        print('Is Job enabled:', job_instance.is_enabled())
-
-    
-reactor = Listener()
-print("jobs:", get_job_details())
+reactor = Listener(config.get_value("jenkins","reactor_for_listening"))
 reactor.add_listener("public", listen)
-
 
 # jenkins = get_server_instance()
 # print(jenkins.version)
