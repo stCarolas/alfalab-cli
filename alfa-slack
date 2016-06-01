@@ -20,4 +20,4 @@ def on_message(message):
                 message = message['message']
                 slack.rtm_send_message(channel, message)
 
-Listener(config.get_value("global", "reactor_for_listening")).add_listener("public", on_message)
+Listener(config.get_value("global", "reactor_for_listening"), "public").add_listener(on_message)
