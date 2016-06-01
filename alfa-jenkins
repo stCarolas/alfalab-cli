@@ -12,13 +12,17 @@ def get_server_instance():
     server = Jenkins(config.get_value("jenkins", "url"),
                      username = config.get_value("jenkins", "login"),
                      password = config.get_value("jenkins", "token"))
-    print("jenkind getted")
+    print("jenkins getted")
     return server
 
-def start_job(job):
-    get_server_instance().build_job(job)
-    print("queue build")
-    
+def start_job(project_key, project_name):
+    job_name = form_job_name(project_key, project_name)
+    get_server_instance().build_job(job_name)
+    print("build",job_name,"started")
+
+def form_job_name(project_key, project_name):
+    return project_key + "-" + project_name + "_dev"
+
 def listen(message):
     if message['event'] in events:
         job = message['payload']['job']

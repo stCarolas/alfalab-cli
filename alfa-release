@@ -14,7 +14,6 @@ config = Config()
 template = '_version\\s*=\\s*\\d*\\.\\d*\\.\\d*'
 projects = config.get_value("git","projects").split(",")
 
-
 def get_cli_args():
     parser = argparse.ArgumentParser(description='Generate changelog')
     parser.add_argument('repo',     
@@ -93,10 +92,22 @@ def finalize():
             if last_release:
                 update_inventory("production", project, last_release.name)
 
+def query_builds(projects):
+    eventSender = Sender(config.get_value("global","reactor_for_sending"))
+    eventListener = Listener(config.get_value("global","reactor_for_listening"), channel)
+    for project in projects:
+        message = "{'event':'start job', 'notify':false, 'payload':{'job':'" + project + "'}}"
+        eventSender.sync_send("public", message)
+        eventListener.on_first_message()
+
+        
+
 if __name__ == '__main__':
     # print("dir",config.get_value("git", "corp-list-accounts-api.dir"))
-    repos = get_unreleased_projects()
-    releases = release_all(repos)
+    projects = get_unreleased_projects()
+    releases = release_all(projects)
+    query_builds(projects)
+    
     print(releases)
     # args = get_cli_args()
     # repo_directory = args.repo[0]
