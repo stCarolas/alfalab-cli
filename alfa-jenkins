@@ -15,13 +15,13 @@ def get_server_instance():
     print("jenkins getted")
     return server
 
-def start_job(project_key, project_name):
-    job_name = form_job_name(project_key, project_name)
+def start_job(project_name):
+    job_name = form_job_name(project_name)
     get_server_instance().build_job(job_name)
     print("build",job_name,"started")
 
-def form_job_name(project_key, project_name):
-    return project_key + "-" + project_name + "_dev"
+def form_job_name(project_name):
+    return project_name + "_dev"
 
 def listen(message):
     if message['event'] in events:

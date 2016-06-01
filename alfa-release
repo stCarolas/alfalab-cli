@@ -105,7 +105,7 @@ def query_builds(projects):
 if __name__ == '__main__':
     # print("dir",config.get_value("git", "corp-list-accounts-api.dir"))
     projects = get_unreleased_projects()
-    releases = release_all(projects)
+    # releases = release_all(projects)
     query_builds(projects)
     
     print(releases)
