@@ -15,20 +15,16 @@ def get_server_instance():
     print("jenkind getted")
     return server
 
-def parse_message(message):
-    return json.loads(message)
-
 def start_job(job):
     get_server_instance().build_job(job)
     print("queue build")
     
 def listen(message):
-    message = parse_message(message)
     if message['event'] in events:
         job = message['payload']['job']
         start_job(job)
 
-reactor = Listener(config.get_value("jenkins","reactor_for_listening"))
+reactor = Listener(config.get_value("global","reactor_for_listening"))
 reactor.add_listener("public", listen)
 
 # jenkins = get_server_instance()
