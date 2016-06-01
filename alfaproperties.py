@@ -2,6 +2,7 @@
 # Extract settings from property files from ~/.config/alfa/settings.cfg
 
 import configparser, argparse
+import os
 
 def get_cli_args():
     parser = argparse.ArgumentParser(description='Get properties for alfalab cli')
@@ -13,7 +14,9 @@ def get_cli_args():
     return parser.parse_args()
 
 class Config():
-    path = "/Users/stCarolas/.config/alfa/settings.cfg"
+    path = os.environ['ALFACONFIG']
+    if not path:
+        path = "/Users/stCarolas/.config/alfa/settings.cfg"
 
     def get_value(self, section, key):
         config = configparser.ConfigParser()
