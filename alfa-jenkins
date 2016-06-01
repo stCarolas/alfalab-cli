@@ -28,7 +28,7 @@ def listen(message):
         job = message['payload']['job']
         start_job(job)
 
-reactor = Listener(config.get_value("global","reactor_for_listening"))
+reactor = Listener(config.get_value("global","reactor_for_listening"), "public")
 reactor.add_listener("public", listen)
 
 # jenkins = get_server_instance()
