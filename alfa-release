@@ -27,6 +27,11 @@ def get_cli_args():
                         const=True,
                         default = False,
                         help = 'git repository')
+    parser.add_argument('--build',
+                        dest = 'build',
+                        type = str,
+                        default = None,
+                        help = 'number of jenkins build')
     parser.add_argument('--all',
                         dest = 'all',
                         action = 'store_const',
@@ -50,10 +55,28 @@ def update_inventory(inventory_name, project, new_version):
             f.write(filecontent)
             f.close()
 
+def get_actual_version(project):
+    repo = get_project_repo(project)
+    tags = Herodotus(repo).get_tags()
+    if tags:
+        return tags[len(tags) - 1]
+    else:
+        return "0.0.0"
+
+def update_jenkins_build_version(repo, build_number):
+    tags = Herodotus(repo).get_tags()
+    last_stable = ""
+    if tags:
+        last_release = tags[len(tags) - 1]
+    else:
+        last_stable = "0.0.0"
+    version = last_stable[:last_stable.rfind('.') + 1] + build_number
+    return version
+
 def release(project, is_fix):
     repo = get_project_repo(project)
     tags = Herodotus(repo).get_tags()
-    released_version = "1.0.0"
+    released_version = "0.0.0"
     if tags:
         last_release = tags[len(tags) - 1]
         if last_release:
@@ -104,13 +127,18 @@ def query_builds(projects):
 
 if __name__ == '__main__':
     # print("dir",config.get_value("git", "corp-list-accounts-api.dir"))
-    projects = get_unreleased_projects()
+    # projects = get_unreleased_projects()
     # releases = release_all(projects)
-    query_builds(projects)
+    # query_builds(projects)
     
-    print(releases)
-    # args = get_cli_args()
-    # repo_directory = args.repo[0]
+    # print(releases)
+    args = get_cli_args()
+    repo_directory = args.repo[0]
+    
+    if args.build:
+        print("get jenkins version")
+        version = update_jenkins_build_version(repo, args.build)
+        print("version", version)
 
     # release = release(repo_directory, args.fix)
 
