@@ -13,6 +13,7 @@ from sender import Sender
 config = Config()
 template = '_version\\s*=\\s*\\d*\\.\\d*\\.\\d*'
 projects = config.get_value("git","projects").split(",")
+start_job_event_template = "{'event':'start job', 'notify':{}, 'payload':{'job':'{}'}, 'description': '{}'}"
 
 def get_cli_args():
     parser = argparse.ArgumentParser(description='Generate changelog')
@@ -24,13 +25,13 @@ def get_cli_args():
     parser.add_argument('--fix',
                         dest = 'fix',
                         action = 'store_const',
-                        const=True,
+                        const = True,
                         default = False,
                         help = 'git repository')
     parser.add_argument('--all',
                         dest = 'all',
                         action = 'store_const',
-                        const=True,
+                        const = True,
                         default = False,
                         help = 'release all projects, mentioned in config')
     return parser.parse_args()
@@ -57,7 +58,7 @@ def release(project, is_fix):
     if tags:
         last_release = tags[len(tags) - 1]
         if last_release:
-            if is_fix:  
+            if is_fix:
                 released_version = semver.bump_patch(last_release.name)
             else:
                 released_version = semver.bump_minor(last_release.name)
@@ -96,11 +97,11 @@ def query_builds(projects):
     eventSender = Sender(config.get_value("global","reactor_for_sending"))
     eventListener = Listener(config.get_value("global","reactor_for_listening"), channel)
     for project in projects:
-        message = "{'event':'start job', 'notify':false, 'payload':{'job':'" + project + "'}}"
+        message = start_job_event_template.format('false', project, '')
         eventSender.sync_send("public", message)
+        # todo check
         eventListener.on_first_message()
-
-        
+    eventSender.sync_send("public", start_job_event_template.format('true', 'corp-list-release', 'deploy new release'));
 
 if __name__ == '__main__':
     # print("dir",config.get_value("git", "corp-list-accounts-api.dir"))
