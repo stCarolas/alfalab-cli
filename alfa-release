@@ -17,8 +17,8 @@ start_job_event_template = "{'event':'start job', 'notify':{}, 'payload':{'job':
 
 def get_cli_args():
     parser = argparse.ArgumentParser(description='Generate changelog')
-    parser.add_argument('repo',     
-                        metavar = 'directory',
+    parser.add_argument('project',     
+                        metavar = 'project',
                         type = str, 
                         nargs = 1,
                         help = 'git repository')
@@ -39,6 +39,13 @@ def get_cli_args():
                         const = True,
                         default = False,
                         help = 'release all projects, mentioned in config')
+    parser.add_argument('--update-inventory',
+                        dest = 'update',
+                        action = 'store_const',
+                        const = True,
+                        default = False,
+                        help = 'update ansible inventory with generated version')
+
     return parser.parse_args()
 
 def update_inventory(inventory_name, project, new_version):
@@ -64,14 +71,9 @@ def get_actual_version(project):
     else:
         return "0.0.0"
 
-def update_jenkins_build_version(repo, build_number):
-    tags = Herodotus(repo).get_tags()
-    last_stable = ""
-    if tags:
-        last_release = tags[len(tags) - 1]
-    else:
-        last_stable = "0.0.0"
-    version = last_stable[:last_stable.rfind('.') + 1] + build_number
+def update_jenkins_build_version(project, build_number):
+    last_stable = get_actual_version(project)
+    version = last_stable.name[:last_stable.name.rfind('.') + 1] + build_number
     return version
 
 def release(project, is_fix):
@@ -134,12 +136,14 @@ if __name__ == '__main__':
     
     # print(releases)
     args = get_cli_args()
-    repo_directory = args.repo[0]
+    project = args.project[0]
     
     if args.build:
         print("get jenkins version")
-        version = update_jenkins_build_version(repo, args.build)
+        version = update_jenkins_build_version(project, args.build)
         print("version", version)
+        if args.update:
+            update_inventory("development", project, version)
 
     # release = release(repo_directory, args.fix)
 
